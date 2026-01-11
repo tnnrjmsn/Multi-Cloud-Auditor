@@ -1,6 +1,6 @@
-# Multi-Cloud AI Auditor
+# Multi-Framework Cloud Auditor
 
-A lightweight, secure, and serverless tool to discover AI/ML assets across **AWS**, **Azure**, and **GCP**. This tool aids in the "Asset Inventory" and "Operational Control" requirements of the **ISO 42001 (Artificial Intelligence Management System)** standard.
+A lightweight, secure, and serverless tool to audit **AWS**, **Azure**, and **GCP** environments. This tool assists in the "Asset Inventory" and "Operational Control" requirements for multiple ISO standards, focusing on AI Governance, Cloud Security, and Privacy.
 
 ## 🏗 Architecture
 
@@ -10,9 +10,9 @@ A lightweight, secure, and serverless tool to discover AI/ML assets across **AWS
 
 ## 🚀 Prerequisites
 
-1.  **Google Cloud Account** (Free tier is sufficient).
-2.  **gcloud CLI** installed and authenticated.
-3.  **Docker** (Optional, only if testing backend locally).
+* **Google Cloud Account** (Free tier is sufficient).
+* **gcloud CLI** installed and authenticated.
+* **Docker** (Optional, only if testing backend locally).
 
 ## 🛠 Deployment (Backend)
 
@@ -20,6 +20,7 @@ We deploy the Python backend to Google Cloud Run.
 
 1.  **Clone this repo** and navigate to the `backend` folder.
 2.  **Deploy using Cloud Build** (No local Docker required):
+
     ```bash
     gcloud run deploy cloud-auditor \
       --source . \
@@ -28,6 +29,7 @@ We deploy the Python backend to Google Cloud Run.
       --no-allow-unauthenticated \
       --memory 512Mi
     ```
+
     *Note: The `--no-allow-unauthenticated` flag ensures only users with valid Google credentials can access your API.*
 
 3.  **Copy the URL** output by the command (e.g., `https://cloud-auditor-xyz.run.app`).
@@ -37,25 +39,33 @@ We deploy the Python backend to Google Cloud Run.
 1.  Open `frontend/index.html` in your web browser.
 2.  **Generate a Security Token**:
     Since the backend is private, you need a temporary ID token. Run this in your terminal:
+
     ```bash
     gcloud auth print-identity-token
     ```
+
     *Tokens are valid for 1 hour.*
+
 3.  **Fill out the UI**:
     * **Cloud Run URL**: Paste the URL from the deployment step.
     * **Google ID Token**: Paste the token generated above.
     * **Cloud Credentials**: Enter Read-Only keys for the clouds you want to scan.
 4.  Click **Run Secure Audit Scan**.
 
-## 🛡 ISO 42001 Alignment
+## 🛡 Compliance Framework Alignment
 
-This tool assists with the following clauses:
+This tool maps discovered assets and configurations to specific controls across four major ISO standards.
 
-| Clause | Description | How this tool helps |
-| :--- | :--- | :--- |
-| **6.1** | **Actions to address risks** | Automates the discovery of "Shadow AI" or undocumented AI assets (SageMaker, Vertex AI, etc.). |
-| **8.2** | **AI Risk Assessment** | Identifies if development notebooks are exposed or running in production states. |
-| **9.1** | **Monitoring & Evaluation** | Checks if AI services (like Azure OpenAI) have logging/diagnostics enabled. |
+| Framework | Control / Clause | Description | How this tool helps |
+| :--- | :--- | :--- | :--- |
+| **ISO 42001** | **6.1** | **Actions to address risks** | Automates the discovery of "Shadow AI" or undocumented AI assets (SageMaker, Vertex AI, Azure AI). |
+| **ISO 42001** | **8.2** | **AI Risk Assessment** | Identifies if AI development notebooks are exposed or running in production states without controls. |
+| **ISO 42001** | **9.1** | **Monitoring & Evaluation** | Verifies if AI services (like Azure OpenAI) have logging/diagnostic settings enabled for audit trails. |
+| **ISO 27017** | **CLD.8.2.1** | **Info Security in Storage** | Scans S3 buckets and Storage Accounts to ensure default encryption is enabled. |
+| **ISO 27017** | **CLD.9.5** | **Segregation in Networks** | Audits Security Groups and Firewalls to detect unrestricted traffic (0.0.0.0/0) on management ports. |
+| **ISO 27018** | **PII Protection** | **Public Cloud Privacy** | Checks for public exposure of databases and storage where PII might reside. |
+| **ISO 27001** | **A.13.1** | **Network Security Management** | Flags open ports (SSH/RDP) that increase the attack surface for intruders. |
+| **ISO 27001** | **A.10.1** | **Cryptographic Controls** | Checks SQL Databases for Transparent Data Encryption (TDE) to protect confidentiality. |
 
 ## ⚠️ Security Notice
 
@@ -63,4 +73,5 @@ This tool assists with the following clauses:
 * **Best Practice**: Always use **Read-Only** service accounts/principals for auditing purposes.
 
 ## 📄 License
+
 MIT
