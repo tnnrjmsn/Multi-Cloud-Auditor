@@ -14,6 +14,12 @@ A lightweight, secure, and serverless tool to audit **AWS**, **Azure**, and **GC
 2.  **gcloud CLI** installed and authenticated.
 3.  **Python 3.9+** (for local development/testing).
 
+## 📦 Installation (Local Development)
+
+```bash
+pip install -r requirements.txt
+```
+
 ## 🛠 Deployment (Backend)
 
 We deploy the Python backend to Google Cloud Run.
