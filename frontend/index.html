@@ -1,0 +1,132 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>ISO 42001 Cloud Auditor (Secure)</title>
+    <style>
+        /* Basic styling for clean UI */
+        body { font-family: -apple-system, system-ui, sans-serif; max-width: 800px; margin: 0 auto; padding: 20px; background: #f4f4f4; }
+        .card { background: white; padding: 20px; border-radius: 8px; box-shadow: 0 2px 4px rgba(0,0,0,0.1); margin-bottom: 20px; }
+        input, textarea { width: 100%; padding: 8px; margin: 5px 0 15px; box-sizing: border-box; border: 1px solid #ddd; border-radius: 4px; }
+        button { background: #007bff; color: white; border: none; padding: 10px 20px; border-radius: 4px; cursor: pointer; font-size: 16px; }
+        button:hover { background: #0056b3; }
+        pre { background: #2d2d2d; color: #76ff03; padding: 15px; overflow-x: auto; border-radius: 4px; }
+        .hidden { display: none; }
+        .token-box { border-color: #007bff; background-color: #f0f7ff; }
+    </style>
+</head>
+<body>
+    <h1>ISO/IEC 42001:2023 Auditor</h1>
+    <p>Automated discovery of AI/ML assets across AWS, Azure, and GCP.</p>
+    
+    <div class="card">
+        <h3>1. Security & Configuration</h3>
+        
+        <label><b>Cloud Run Endpoint URL</b></label>
+        <input type="text" id="apiUrl" placeholder="https://iso-auditor-xyz.run.app/scan">
+
+        <label><b>Google ID Token</b> (Required for access)</label>
+        <input type="password" id="idToken" class="token-box" placeholder="Paste output of: gcloud auth print-identity-token">
+        <small style="display:block; margin-top:-10px; margin-bottom:15px; color: #666;">
+            This token authenticates you against the Google Cloud Run Proxy. Run <code>gcloud auth print-identity-token</code> in your terminal to generate one.
+        </small>
+    </div>
+
+    <div class="card">
+        <h3>2. Target Cloud Credentials</h3>
+        <p><small>Note: Credentials are sent securely via HTTPS to your private Cloud Run instance. They are not stored on the server.</small></p>
+        
+        <label>AWS Access Key ID</label>
+        <input type="text" id="awsKey">
+        <label>AWS Secret Access Key</label>
+        <input type="password" id="awsSecret">
+        
+        <hr>
+        
+        <label>Azure Client ID</label>
+        <input type="text" id="azClient">
+        <label>Azure Client Secret</label>
+        <input type="password" id="azSecret">
+        <label>Azure Tenant ID</label>
+        <input type="text" id="azTenant">
+        <label>Azure Subscription ID</label>
+        <input type="text" id="azSub">
+
+        <hr>
+
+        <label>GCP Service Account JSON</label>
+        <textarea id="gcpJson" rows="3" placeholder='{"type": "service_account", ...}'></textarea>
+
+        <button onclick="runAudit()" id="scanBtn">Run Secure Audit Scan</button>
+    </div>
+
+    <div id="resultsArea" class="card hidden">
+        <h3>Audit Report</h3>
+        <pre id="jsonOutput">Processing...</pre>
+    </div>
+
+    <script>
+        /**
+         * Collects inputs, attaches the security token, and posts to Cloud Run.
+         */
+        async function runAudit() {
+            const btn = document.getElementById('scanBtn');
+            const output = document.getElementById('jsonOutput');
+            const resultsArea = document.getElementById('resultsArea');
+            const url = document.getElementById('apiUrl').value;
+            const token = document.getElementById('idToken').value;
+
+            // Basic Validation
+            if (!url) { alert("Please enter the Cloud Run URL"); return; }
+            if (!token) { alert("Please enter a Google ID Token"); return; }
+
+            // UI Feedback
+            btn.disabled = true;
+            btn.innerText = "Scanning... (Secure)";
+            resultsArea.classList.remove('hidden');
+            output.innerText = "Authenticating & Connecting... (This may take 30s if the container is starting up)";
+
+            // Build Payload
+            const payload = {
+                aws_access_key: document.getElementById('awsKey').value,
+                aws_secret_key: document.getElementById('awsSecret').value,
+                azure_client_id: document.getElementById('azClient').value,
+                azure_client_secret: document.getElementById('azSecret').value,
+                azure_tenant_id: document.getElementById('azTenant').value,
+                azure_subscription_id: document.getElementById('azSub').value,
+                gcp_json_creds: document.getElementById('gcpJson').value
+            };
+
+            try {
+                // Send Request
+                const response = await fetch(url, {
+                    method: 'POST',
+                    headers: { 
+                        'Content-Type': 'application/json',
+                        // The Bearer token is checked by Google Cloud IAM before it reaches the container
+                        'Authorization': `Bearer ${token}` 
+                    },
+                    body: JSON.stringify(payload)
+                });
+                
+                // Handle Errors
+                if (response.status === 401 || response.status === 403) {
+                    throw new Error("Authentication Failed. Your token may be expired or lack permissions.");
+                }
+                if (!response.ok) throw new Error(`Server Error: ${response.statusText}`);
+                
+                // Display Success
+                const data = await response.json();
+                output.innerText = JSON.stringify(data, null, 2);
+            } catch (err) {
+                output.innerText = "Error: " + err.message;
+            } finally {
+                // Reset UI
+                btn.disabled = false;
+                btn.innerText = "Run Secure Audit Scan";
+            }
+        }
+    </script>
+</body>
+</html>
