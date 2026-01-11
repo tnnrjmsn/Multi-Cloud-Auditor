@@ -10,9 +10,9 @@ A lightweight, secure, and serverless tool to audit **AWS**, **Azure**, and **GC
 
 ## 🚀 Prerequisites
 
-* **Google Cloud Account** (Free tier is sufficient).
-* **gcloud CLI** installed and authenticated.
-* **Docker** (Optional, only if testing backend locally).
+1.  **Google Cloud Account** (Free tier is sufficient).
+2.  **gcloud CLI** installed and authenticated.
+3.  **Python 3.9+** (for local development/testing).
 
 ## 🛠 Deployment (Backend)
 
@@ -51,6 +51,28 @@ We deploy the Python backend to Google Cloud Run.
     * **Google ID Token**: Paste the token generated above.
     * **Cloud Credentials**: Enter Read-Only keys for the clouds you want to scan.
 4.  Click **Run Secure Audit Scan**.
+
+## 🔍 Debugging
+
+### Local Development
+To run the backend locally:
+```bash
+python backend/main.py
+```
+The API will be available at `http://localhost:8080/scan`.
+
+### Cloud Run Logs
+To monitor audit execution and troubleshoot in production:
+```bash
+gcloud run logs read cloud-auditor --region us-central1 --limit 50
+```
+The backend logs all audit steps, credential validation, and errors for visibility into cloud scanning operations.
+
+### Debug Mode
+Enable debug logging locally:
+```bash
+DEBUG=true python backend/main.py
+```
 
 ## 🛡 Compliance Framework Alignment
 
