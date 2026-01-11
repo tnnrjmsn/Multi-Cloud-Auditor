@@ -21,7 +21,7 @@ We deploy the Python backend to Google Cloud Run.
 1.  **Clone this repo** and navigate to the `backend` folder.
 2.  **Deploy using Cloud Build** (No local Docker required):
     ```bash
-    gcloud run deploy iso-auditor \
+    gcloud run deploy cloud-auditor \
       --source . \
       --platform managed \
       --region us-central1 \
@@ -30,7 +30,7 @@ We deploy the Python backend to Google Cloud Run.
     ```
     *Note: The `--no-allow-unauthenticated` flag ensures only users with valid Google credentials can access your API.*
 
-3.  **Copy the URL** output by the command (e.g., `https://iso-auditor-xyz.run.app`).
+3.  **Copy the URL** output by the command (e.g., `https://cloud-auditor-xyz.run.app`).
 
 ## 🖥 Usage (Frontend)
 
