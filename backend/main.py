@@ -47,7 +47,7 @@ from botocore.exceptions import ClientError, NoCredentialsError
 from flask import Flask, request, jsonify
 from flask_cors import CORS
 
-# Azure
+# Azure Imports
 from azure.identity import ClientSecretCredential
 from azure.core.exceptions import AzureError
 from azure.mgmt.cognitiveservices import CognitiveServicesManagementClient
@@ -55,7 +55,7 @@ from azure.mgmt.storage import StorageManagementClient
 from azure.mgmt.network import NetworkManagementClient
 from azure.mgmt.sql import SqlManagementClient
 
-# GCP
+# GCP Imports
 from google.cloud import aiplatform
 from google.cloud import storage
 from google.oauth2 import service_account
@@ -554,7 +554,6 @@ def scan_endpoint() -> Any:
 
         logger.info("Cloud audit scan completed")
         return jsonify(auditor.report)
-
     except Exception as e:
         logger.exception(f"Unexpected error in scan endpoint: {e}")
         return jsonify({"error": f"Internal server error: {str(e)}"}), 500
