@@ -1,4 +1,4 @@
-# ISO/IEC 42001:2023 Multi-Cloud AI Auditor
+# Multi-Cloud AI Auditor
 
 A lightweight, secure, and serverless tool to discover AI/ML assets across **AWS**, **Azure**, and **GCP**. This tool aids in the "Asset Inventory" and "Operational Control" requirements of the **ISO 42001 (Artificial Intelligence Management System)** standard.
 
